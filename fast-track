@@ -1,0 +1,6 @@
+#!/bin/sh
+
+cd ~sava/src/starccm/dev/star 
+git pull
+git push fast-track HEAD:refs/heads/master
+

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+IN=$HOME/dev/star/
+OUT=$HOME/starccm+/java/star/
+
+echo rsync -rptOCv --delete --exclude=/lib --exclude=**/*.java $IN $OUT
+rsync -rptOCv --delete --exclude=/lib --exclude=**/*.java $IN $OUT
+

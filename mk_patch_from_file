@@ -1,0 +1,26 @@
+#!/bin/sh
+
+if [ $# -lt 4 ] ; then
+  echo
+  echo "  $0 <JIRA> <REL> <PATCH FILE> <COMMENT>"
+  echo
+  exit
+fi
+
+JIRA=$1
+shift
+REL=$1
+shift
+PATCH=$1
+shift
+COMMENT="$*"
+
+echo "git remote update"
+echo "git checkout -b $JIRA origin/release/$REL"
+echo "patch -p1 < $PATCH"
+echo "git st"
+echo "git diff"
+echo "git add ." 
+echo "git commit -m \"$JIRA - $COMMENT\""
+echo "git push origin HEAD:patch/$REL/$JIRA"
+

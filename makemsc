@@ -1,0 +1,11 @@
+#!/bin/bash
+
+MSCFILE=graph.msc
+
+cat $@ | grep 'Ch010:' | sort | cut -c 27- > $MSCFILE
+LASTLINE=`tail -1 $MSCFILE | grep -v '}'` 
+if [ "$LASTLINE" ] ; then
+  echo '}' >> $MSCFILE
+fi 
+
+mscgen -T svg -i $MSCFILE

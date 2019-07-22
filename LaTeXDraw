@@ -1,0 +1,11 @@
+#!/bin/sh
+
+DIR=`basename $0`
+JAR=$HOME/software/$DIR/$DIR.jar
+DEV_HOME=$HOME/src/starccm+/dev
+JDK_BASE=$DEV_HOME/jdk/linux-x86_64
+JDK_VERSION=`(cd $JDK_BASE; ls -1dtr --indicator-style=none jdk* | tail -n 1)`
+JAVA=$JDK_BASE/$JDK_VERSION/bin/java
+
+echo $JAVA -jar $JAR
+$JAVA -jar $JAR

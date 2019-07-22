@@ -1,0 +1,11 @@
+#!/bin/sh
+
+NETBEANS=$HOME/bin/netbeans
+DEV_HOME=$HOME/src/starccm+/dev
+JDK_BASE=$DEV_HOME/jdk/linux-x86_64
+JDK_VERSION=`(cd $JDK_BASE; ls -1dtr --indicator-style=none jdk* | tail -n 1)`
+JAVA=$JDK_BASE/$JDK_VERSION/bin/java
+JDK_HOME=$JDK_BASE/$JDK_VERSION
+DATA=$HOME/src/starccm+/dev
+echo $NETBEANS  --jdkhome $JDK_HOME
+$NETBEANS  --jdkhome $JDK_HOME

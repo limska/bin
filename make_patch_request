@@ -1,0 +1,22 @@
+#!/bin/bash
+
+RELEASE=$1
+JIRA=$2
+MSG=$3
+# echo "MSG=$MSG"
+# echo "Num arg: $#" 
+
+if [ $# -lt 3 ] ; then
+  echo "Usage: $0 <RELEASE> <JIRA> <Message>"
+  exit 1 
+fi
+
+BNAME="patch/$RELEASE/$JIRA"
+
+echo git checkout release/$RELEASE
+
+echo git checkout -b $BNAME
+
+echo git commit -am \"$JIRA - $MSG\"
+
+echo git push -u origin $BNAME

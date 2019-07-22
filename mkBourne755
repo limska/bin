@@ -1,0 +1,3 @@
+#/bin/sh
+
+find . -type f -exec file {} \; | grep "Bourne shell script text" | awk -F: '{print $1}' | xargs -n 1 chmod -v 755

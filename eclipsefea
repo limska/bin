@@ -1,0 +1,12 @@
+#!/bin/sh
+
+ECLIPSE=$HOME/software/eclipse/eclipse
+DEV_HOME=$HOME/src/fea
+JDK_BASE=$DEV_HOME/jdk/linux-x86_64
+JDK_VERSION=`(cd $JDK_BASE; ls -1dtr --indicator-style=none jdk* | tail -n 1)`
+JAVA=$JDK_BASE/$JDK_VERSION/bin/java
+DATA=$HOME/src/fea
+#echo $ECLIPSE $* -vm $JAVA -data $DATA -vmargs -Xmx768M -XX:MaxPermSize=768M
+#$ECLIPSE $* -vm $JAVA -data $DATA -vmargs -Xmx768M -XX:MaxPermSize=768M -XX:-UseCompressedOops
+echo $ECLIPSE $* -data $DATA -vm $JAVA -vmargs -Xms3072m -Xmx3072m -XX:PermSize=8192m -XX:MaxPermSize=8192m  -XX:-UseCompressedOops
+$ECLIPSE $* -data $DATA -vm $JAVA -vmargs -Xms3072m -Xmx3072m -XX:PermSize=8192m -XX:MaxPermSize=8192m  -XX:-UseCompressedOops

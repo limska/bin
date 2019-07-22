@@ -1,0 +1,24 @@
+#!/bin/sh
+
+if [ $# -lt 4 ] ; then
+  echo
+  echo "  $0 <JIRA> <REL> <SHA> <COMMENT>"
+  echo
+  exit
+fi
+
+JIRA=$1
+shift
+REL=$1
+shift
+SHA=$1
+shift
+COMMENT="$*"
+
+echo "git remote update"
+echo "git checkout -b $JIRA origin/release/$REL"
+echo "git cherry-pick $SHA"
+echo "git st"
+echo "git commit --amend -m \"$JIRA - $COMMENT\""
+echo "git push origin HEAD:patch/$REL/$JIRA"
+

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+ABQ=`ps -ef | grep \[a]baqus | sed 's/ [ ]*/ /g'`
+
+if [ "$ABQ" ]; then
+  echo $ABQ
+  ps -ef | grep \[a]baqus | sed 's/ [ ]*/ /g' | cut -d' ' -f2 | xargs kill -9
+fi

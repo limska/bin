@@ -1,0 +1,47 @@
+#!/bin/bash
+
+if [ $# -lt 3 ] ; then
+  echo "Usage: $0 <JIRA> <Branch Name> <Message>" 	 
+  exit 1 
+fi
+
+JIRA=$1
+shift
+NAME=$1
+shift
+MSG=$1
+shift
+
+EXEC=No
+if [ $# -gt 0 ] ; then
+  EXEC=$1
+  shift
+fi
+UNAME=`whoami`
+# echo "MSG=$MSG"
+# echo "Num arg: $#" 
+
+BNAME="feature/$UNAME/$JIRA/$NAME"
+
+if [ "$EXEC" != "Yes" ] ; then
+  git remote -v
+  echo
+fi
+
+echo git checkout -b $BNAME
+if [ "$EXEC" == "Yes" ] ; then
+  git checkout -b $BNAME
+  sleep 2
+fi
+
+echo git commit -am \"$JIRA - $MSG\"
+if [ "$EXEC" == "Yes" ] ; then
+  git commit -am "$JIRA - $MSG"
+  sleep 2
+fi
+
+# Create branch on remote and set your local up to track it
+echo git push -u origin $BNAME
+if [ "$EXEC" == "Yes" ] ; then
+  git push -u origin $BNAME
+fi

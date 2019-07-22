@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo >> update.log
+date >> update.log
+cvs -q up -Pd 2>&1 | tee -a update.log

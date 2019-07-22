@@ -1,0 +1,24 @@
+#!/bin/sh
+
+
+DEVHOME1=$HOME/src/starccm/dev
+DEVHOME2=$HOME/dev
+DEVHOME=
+if [ -d "$DEVHOME1" ] ; then
+  DEVHOME=$DEVHOME1
+elif [ -d "$DEVHOME2" ] ; then
+  DEVHOME=$DEVHOME2
+fi 
+
+STARBIN=$DEVHOME/star/bin
+
+echo "Setting DEV_HOME to $DEVHOME"
+DEV_HOME=$DEVHOME
+
+EXISTS=`echo $PATH | cut -d':' -f1 | grep "$STARBIN"`
+if [ -z "$EXISTS" ] ; then
+  PATH=`echo $PATH | sed -e "s@$STARBIN:@@g"` 
+  echo "Adding $STARBIN to PATH"
+  PATH=$STARBIN:$PATH
+  export PATH
+fi

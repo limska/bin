@@ -1,0 +1,15 @@
+#!/bin/sh
+
+DIR=`basename $0`
+#PERSPECTIVE="C/C++"
+PERSPECTIVE="org.eclipse.cdt.ui.CPerspective.Laptop"
+ECLIPSE=$HOME/software/$DIR/eclipse
+DEV_HOME=$HOME/src/starccm+/dev
+JDK_BASE=$DEV_HOME/jdk/linux-x86_64
+JDK_VERSION=`(cd $JDK_BASE; ls -1dtr --indicator-style=none jdk* | tail -n 1)`
+JAVA=$JDK_BASE/$JDK_VERSION/bin/java
+DATA=$HOME/src/starccm+/dev
+#echo $ECLIPSE $* -vm $JAVA -data $DATA -vmargs -Xmx768M -XX:MaxPermSize=768M
+#$ECLIPSE $* -vm $JAVA -data $DATA -vmargs -Xmx768M -XX:MaxPermSize=768M -XX:-UseCompressedOops
+echo $ECLIPSE $* -perspective $PERSPECTIVE -data $DATA -vm $JAVA -vmargs -Xms2048m -Xmx2048m -XX:PermSize=4096m -XX:MaxPermSize=4096m  -XX:-UseCompressedOops
+exec $ECLIPSE $* -perspective $PERSPECTIVE -data $DATA -vm $JAVA -vmargs -Xms2048m -Xmx2048m -XX:PermSize=4096m -XX:MaxPermSize=4096m  -XX:-UseCompressedOops

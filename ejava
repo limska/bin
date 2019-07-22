@@ -1,0 +1,10 @@
+#!/bin/sh
+
+ECLIPSE=/users/lonli6009a/sava/software/eclipse/java/eclipse
+DEV_HOME=/users/lonli6009a/sava/src/starccm+/dev/cpp
+JDK_BASE=$DEV_HOME/jdk/linux-x86_64
+JDK_VERSION=`(cd $JDK_BASE; ls -1dtr --indicator-style=none jdk* | tail -n 1)`
+JAVA=$JDK_BASE/$JDK_VERSION/bin/java
+DATA=/users/lonli6009a/sava/src/starccm+/dev/java
+echo $ECLIPSE $* -vm $JAVA -data $DATA -vmargs -Xmx768M -XX:MaxPermSize=768M
+$ECLIPSE $* -vm $JAVA -data $DATA -vmargs -Xmx768M -XX:MaxPermSize=768M

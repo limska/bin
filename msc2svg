@@ -1,0 +1,3 @@
+#!/bin/bash
+
+mscgen -T svg -i $1

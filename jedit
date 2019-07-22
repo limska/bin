@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# Runs jEdit - Programmer's Text Editor.
+#
+
+# Set jvm heap initial and maximum sizes (in megabytes).
+JAVA_HEAP_MAX_SIZE=192
+
+JAVA_HOME="/users/lonli6009a/sava/dev/jdk/linux-x86_64/jdk1.6.0_22/jre"
+
+# Launch application.
+
+exec "$JAVA_HOME/bin/java" -Xmx${JAVA_HEAP_MAX_SIZE}M -jar "/users/lonli6009a/sava/software/jedit/4.3.1/jedit.jar" "$@"

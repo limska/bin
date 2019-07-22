@@ -1,0 +1,24 @@
+#!/bin/sh
+
+
+RELHOME1=$HOME/src/starccm/rel
+RELHOME2=$HOME/rel
+RELHOME=
+if [ -d "$RELHOME1" ] ; then
+  RELHOME=$RELHOME1
+elif [ -d "$RELHOME2" ] ; then
+  RELHOME=$RELHOME2
+fi 
+
+STARBIN=$RELHOME/star/bin
+
+echo "Setting DEV_HOME to $RELHOME"
+DEV_HOME=$RELHOME
+
+EXISTS=`echo $PATH | cut -d':' -f1 | grep "$STARBIN"`
+if [ -z "$EXISTS" ] ; then
+  PATH=`echo $PATH | sed -e "s@$STARBIN:@@g"` 
+  echo "Adding $STARBIN to PATH"
+  PATH=$STARBIN:$PATH
+  export PATH
+fi

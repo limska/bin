@@ -1,0 +1,18 @@
+#!/bin/bash
+
+. ~/bin/setdev
+bin/rsync_starmirror
+make clean
+make MODULES="coSimulationAbaqus coSimulationStarccm coSimulationStarccm2 coSimulationAPI coSimulationVibratingPipe coSimulationRestart coSimulationStarBasicOperations coSimulationStarPhysics coupling couplingWithCaeCodes reactingChannelSmall"
+#bin/startest -m coSimulationAbaqus -g licensed3rdparty -configure
+bin/startest -m coSimulationStarccm -configure
+bin/startest -m coSimulationStarccm2 -append
+bin/startest -m coSimulationAPI -append
+bin/startest -m coSimulationVibratingPipe -append
+bin/startest -m coSimulationRestart -append
+bin/startest -m coSimulationStarBasicOperations -append
+bin/startest -m coSimulationStarPhysics -append
+bin/startest -m coupling -append
+bin/startest -m couplingWithCaeCodes -append
+bin/startest -m reactingChannelSmall -append
+bin/startest -runtests

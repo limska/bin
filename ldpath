@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+#   STAR-CCM+
+#   Unix platform run script
+#
+#   Copyright 2000-2015 CD-adapco. All Rights Reserved
+#
+
+STARBIN=`dirname $0`
+
+. "$STARBIN/starenv"
+
+export mode=server
+
+reset_env
+setup_environment
+
+echo $LD_LIBRARY_PATH
+
+ldd lib/linux-x86_64-2.17/gnu4.8/lib/*.so | grep '=>' | grep 'starccm' | grep -v 'no version' | sed -e 's/ [^a-z]0x0.*$//g' | sort | uniq | sed -e 's%=> .*dev/%=> %g'
+

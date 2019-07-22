@@ -1,0 +1,237 @@
+#!/bin/sh
+# git-difftool-helper is a GIT_EXTERNAL_DIFF-compatible diff tool launcher.
+# It supports kdiff3, kompare, tkdiff, xxdiff, meld, opendiff,
+# emerge, ecmerge, vimdiff, gvimdiff, and custom user-configurable tools.
+# This script is typically launched by using the 'git difftool'
+# convenience command.
+#
+# Copyright (c) 2009 David Aguilar
+
+# Set GIT_DIFFTOOL_NO_PROMPT to bypass the per-file prompt.
+should_prompt () {
+	! test -n "$GIT_DIFFTOOL_NO_PROMPT"
+}
+
+# Should we keep the backup .orig file?
+keep_backup_mode="$(git config --bool merge.keepBackup || echo true)"
+keep_backup () {
+	test "$keep_backup_mode" = "true"
+}
+
+# This function manages the backup .orig file.
+# A backup $FILENAME.orig file is created if changes are detected.
+cleanup_temp_files () {
+	if test -n "$FILENAME"; then
+		if keep_backup && test "$FILENAME" -nt "$BACKUP"; then
+			test -f "$BACKUP" && mv -- "$BACKUP" "$FILENAME.orig"
+		else
+			rm -f -- "$BACKUP"
+		fi
+	fi
+}
+
+# This is called when users Ctrl-C out of git-difftool-helper
+sigint_handler () {
+	cleanup_temp_files
+	exit 1
+}
+
+# This function prepares temporary files and launches the appropriate
+# diff tool.
+launch_diff_tool () {
+	FILENAME="$1" # FILENAME is the relative path from git
+	PRE="$2"      # PRE contains /a/filename
+	POST="$3"     # POST contains /b/filename
+	ext="$$$(expr "$FILENAME" : '.*\(\.[^/]*\)$')"
+	BACKUP="$FILENAME.BACKUP.$ext"
+
+	# Create and ensure that we clean up $BACKUP
+	test -f "$FILENAME" && cp -- "$FILENAME" "$BACKUP"
+	trap sigint_handler SIGINT
+
+	# $PRE and $POST can be temporary files so prompt
+	# the user with the real name before launching $diff_tool.
+	if should_prompt; then
+		printf "\nViewing: '$FILENAME'\n"
+		printf "Hit return to launch '%s': " "$diff_tool"
+		read ans
+	fi
+
+	# Run the appropriate diff tool command
+	case "$diff_tool" in
+	kdiff3)
+		basename=$(basename "$FILENAME")
+		"$diff_tool_path" --auto \
+			--L1 "$basename (A)" \
+			--L2 "$basename (B)" \
+			-o "$FILENAME" "$PRE" "$POST" \
+			> /dev/null 2>&1
+		;;
+
+	kompare)
+		"$diff_tool_path" "$PRE" "$POST"
+		;;
+
+	tkdiff)
+		"$diff_tool_path" -o "$FILENAME" "$PRE" "$POST"
+		;;
+
+	meld)
+		"$diff_tool_path" "$PRE" "$POST"
+		;;
+
+	vimdiff)
+		"$diff_tool_path" -c "wincmd r" "$PRE" "$POST"
+		;;
+
+	gvimdiff)
+		"$diff_tool_path" -c "wincmd r" -f "$PRE" "$POST"
+		;;
+
+	xxdiff)
+		"$diff_tool_path" \
+			-X \
+			-R 'Accel.SaveAsMerged: "Ctrl-S"' \
+			-R 'Accel.Search: "Ctrl+F"' \
+			-R 'Accel.SearchForward: "Ctrl-G"' \
+			--merged-file "$FILENAME" \
+			"$PRE" "$POST"
+		;;
+
+	opendiff)
+		"$diff_tool_path" "$PRE" "$POST" \
+			-merge "$FILENAME" | cat
+		;;
+
+	ecmerge)
+		"$diff_tool_path" "$PRE" "$POST" \
+			--default --mode=merge2 --to="$FILENAME"
+		;;
+
+	emerge)
+		"$diff_tool_path" -f emerge-files-command \
+			"$PRE" "$POST" "$(basename "$FILENAME")"
+		;;
+
+	*)
+		if test -n "$diff_tool_cmd"; then
+			( eval $diff_tool_cmd )
+		fi
+		;;
+	esac
+
+	cleanup_temp_files
+}
+
+# Verifies that difftool.<tool>.cmd exists
+valid_custom_tool() {
+	diff_tool_cmd="$(git config difftool.$1.cmd)"
+	test -n "$diff_tool_cmd"
+}
+
+# Verifies that the chosen diff tool is properly setup.
+# Built-in diff tools are always valid.
+valid_tool() {
+	case "$1" in
+	kdiff3 | kompare | tkdiff | xxdiff | meld | opendiff | emerge | vimdiff | gvimdiff | ecmerge)
+		;; # happy
+	*)
+		if ! valid_custom_tool "$1"
+		then
+			return 1
+		fi
+		;;
+	esac
+}
+
+# Sets up the diff_tool_path variable.
+# This handles the difftool.<tool>.path configuration.
+init_diff_tool_path() {
+	diff_tool_path=$(git config difftool."$1".path)
+	if test -z "$diff_tool_path"; then
+		case "$1" in
+		emerge)
+			diff_tool_path=emacs
+			;;
+		*)
+			diff_tool_path="$1"
+			;;
+		esac
+	fi
+}
+
+# Allow the GIT_DIFF_TOOL variable to provide a default value
+test -n "$GIT_DIFF_TOOL" && diff_tool="$GIT_DIFF_TOOL"
+
+# If no diff tool was specified then use the diff.tool
+# configuration variable.  If that's invalid then reset diff_tool.
+if test -z "$diff_tool"; then
+	diff_tool=$(git config diff.tool)
+	# if diff.tool is unset then try merge.tool
+	test -z "$diff_tool" && diff_tool=$(git config merge.tool)
+	if test -n "$diff_tool" && ! valid_tool "$diff_tool"; then
+		echo >&2 "git config option diff.tool set to unknown tool: $diff_tool"
+		echo >&2 "Resetting to default..."
+		unset diff_tool
+	fi
+fi
+
+# Try to guess an appropriate diff tool if no tool has been set.
+if test -z "$diff_tool"; then
+	# We have a $DISPLAY so try some common UNIX diff tools
+	if test -n "$DISPLAY"; then
+		# If gnome then prefer meld, otherwise, prefer kdiff3 or kompare
+		if test -n "$GNOME_DESKTOP_SESSION_ID" ; then
+			diff_tool_candidates="meld kdiff3 kompare tkdiff xxdiff gvimdiff"
+		else
+			diff_tool_candidates="kdiff3 kompare tkdiff xxdiff meld gvimdiff"
+		fi
+	fi
+	if echo "${VISUAL:-$EDITOR}" | grep 'emacs' > /dev/null 2>&1; then
+		# $EDITOR is emacs so add emerge as a candidate
+		diff_tool_candidates="$diff_tool_candidates emerge opendiff vimdiff"
+	elif echo "${VISUAL:-$EDITOR}" | grep 'vim' > /dev/null 2>&1; then
+		# $EDITOR is vim so add vimdiff as a candidate
+		diff_tool_candidates="$diff_tool_candidates vimdiff opendiff emerge"
+	else
+		diff_tool_candidates="$diff_tool_candidates opendiff emerge vimdiff"
+	fi
+	echo "diff tool candidates: $diff_tool_candidates"
+
+	# Loop over each candidate and stop when a valid diff tool is found.
+	for i in $diff_tool_candidates
+	do
+		init_diff_tool_path $i
+		if type "$diff_tool_path" > /dev/null 2>&1; then
+			diff_tool=$i
+			break
+		fi
+	done
+
+	if test -z "$diff_tool" ; then
+		echo "No known diff program available."
+		exit 1
+	fi
+
+else
+	# A diff tool has been set, so verify that it's valid.
+	if ! valid_tool "$diff_tool"; then
+		echo >&2 "Unknown diff tool $diff_tool"
+		exit 1
+	fi
+
+	init_diff_tool_path "$diff_tool"
+
+	if test -z "$diff_tool_cmd" && ! type "$diff_tool_path" > /dev/null 2>&1; then
+		echo "The diff tool $diff_tool is not available as '$diff_tool_path'"
+		exit 1
+	fi
+fi
+
+
+# Launch the diff tool on each path provided by 'git diff'
+while test $# -gt 6
+do
+	launch_diff_tool "$1" "$2" "$5"
+	shift 7
+done

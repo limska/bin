@@ -1,0 +1,61 @@
+#!/bin/sh
+VER=1.00.002
+
+DEVHOME=$HOME/src/starccm+/dev
+INSTALLDIR=$HOME/install
+. $DEVHOME/star/RELEASE_NOTES
+
+STAR_ARCH=
+while [ $# -gt 0 ]; do
+    case "$1" in
+
+    -arch )
+	STAR_ARCH=$2
+	shift
+    ;;
+
+    -help )
+	usage
+    ;;
+
+    esac
+    shift
+done
+if [ "$STAR_ARCH" ] ; then
+  echo "STAR_ARCH=$STAR_ARCH"
+else
+  STAR_ARCH=`$DEVHOME/star/bin/getarch`
+fi
+
+ENV=`ls -1d $DEVHOME/star/lib/$STAR_ARCH/* | grep -v system | grep -v '[0-9]-g' | head -1`
+ENV=`basename $ENV`
+
+if [ -d "$INSTALLDIR/starccm+${release_number}" ] ; then
+  rm -rf $INSTALLDIR/starccm+${release_number}
+fi
+
+DISTFILE=$DEVHOME/star/dist/starccm+${release_number}_${STAR_ARCH}_${ENV}.tar.gz
+if [ -f "$DISTFILE" ] ; then
+  echo "Using existing distfile: $DISTFILE"
+else
+  $DEVHOME/star/config/make-distrib ${STAR_ARCH} $ENV $DEVHOME
+fi
+
+if [ -f "$DISTFILE" ] ; then
+  STARCCM_INSTALLDIR="$INSTALLDIR/starccm+${release_number}"
+  if [ -d "$STARCCM_INSTALLDIR" ] ; then
+    echo "Removing old installation"
+    rm -rf $STARCCM_INSTALLDIR
+  fi
+  $DEVHOME/star/config/make-install $DISTFILE $INSTALLDIR
+else
+  echo "ERROR: Can not find $DISTFILE"
+fi
+
+if [ ! -d "$INSTALLDIR" ] ; then
+  mkdir -vp $DEVHOME
+fi
+
+if [ ! -d "$INSTALLDIR/jdk" ] ; then
+  cp -r $DEVHOME/jdk $INSTALLDIR/jdk
+fi

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+rdesktop -g 1500x900 win7ent64.vm.london.cd-adapco.com -d WINDOWS -u sava -p -

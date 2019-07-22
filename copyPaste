@@ -1,0 +1,87 @@
+#!/bin/bash
+
+usage () {
+cat << \EOF
+
+Usage: copyPaste cppFile newName
+
+Where:
+  cppFile                # is the original cosimulation/src/cosimulation/starccmplus/ThermalExportSpecification.cpp
+  newName                # new name as in MechanicalExportSpecification
+
+EOF
+
+if [ $# -gt 0 ]; then
+    echo_error "$*"
+fi
+
+exit 1
+}
+
+echo_error() {
+    echo "Error: $1"
+    shift
+    for line do echo "       $line"; done
+}
+
+echo_info() {
+    echo "Info: $1"
+    shift
+    for line do echo "      $line"; done
+}
+
+echo_warning() {
+    echo "Warning: $1"
+    shift
+    for line do echo "         $line"; done
+}
+
+# print and then execute a command
+echo_command() {
+   [ $verbose ] && echo "$@"
+   "$@"
+}
+
+# print and then execute a command
+echo_command_set_exitcode() {
+    echo_command "$@"
+    exitcode="$?"
+}
+
+main() {
+  CPP=$1
+  SRCNAME=`basename $CPP`
+  SRCDIR=`dirname $CPP`
+  HEADER=`echo $CPP | sed -e 's/.cpp$/.h/g'`
+  SRCNAME=`echo $SRCNAME | sed -e 's/.cpp$//'`
+  OUTNAME=$2
+  BASE=`echo $CPP | sed 's%/src.*$%%'`
+
+  JAVA=`cat $CPP | grep 'const _className' | cut -d\" -f2 | sed 's$\.$/$g'`
+  JAVA="$BASE/java/$JAVA.java"
+
+  OUTCPP="$SRCDIR/$OUTNAME.cpp"
+  OUTHEADER="$SRCDIR/$OUTNAME.h"
+  OUTJAVA=`echo $JAVA | sed -e "s/$SRCNAME/$OUTNAME/"`
+
+  echo "OUTCPP=$OUTCPP"
+  echo "OUTHEADER=$OUTHEADER"
+  echo "OUTJAVA=$OUTJAVA"
+
+  cat $CPP | sed -e "s/$SRCNAME/$OUTNAME/g" > $OUTCPP
+  cat $HEADER | sed -e "s/$SRCNAME/$OUTNAME/g" > $OUTHEADER
+  cat $JAVA | sed -e "s/$SRCNAME/$OUTNAME/g" > $OUTJAVA
+  
+  ls -l $OUTCPP
+  ls -l $OUTHEADER
+  ls -l $OUTJAVA
+}
+
+if [ $# -ne 2 ]; then
+    usage
+    exit 1
+fi
+
+verbose=yes
+
+main "$@"

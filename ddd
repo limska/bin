@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#GDB=$HOME/src/gdb/bin/gdb
+#GDB=/usr/bin/gdb
+GDB=
+LIBS=$HOME/src/starccm+/dev/star/lib/linux-x86_64-2.12/gnu4.8-callgrind/lib
+EXEC=$LIBS/star-ccm+
+PID=$1
+if [ $# -eq 2 ] ; then
+  EXEC=$1
+  shift
+  PID=$@
+fi
+
+export LD_LIBRARY_PATH=$LIBS:$PATH
+echo "/usr/bin/ddd $EXEC $PID"
+/usr/bin/ddd $EXEC $PID

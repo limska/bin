@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#rsync -avzhe ssh --exclude='eclipse' --exclude='python' --exclude='java*' --exclude='chrom*' phaethon.london.cd-adapco.com:/users/porting/software/ $HOME/software
+rsync -avzhe ssh --exclude='eclipse' --exclude='python' --exclude='java*' --exclude='chrom*' /users/porting/software/ xeona42.austin:software
+
+PYTHON=python/3.3.5/linux64_2.6-x86-gcc_3.4.6-glibc_2.3.4
+#mkdir -p ~/software/$PYTHON
+#rsync -avzhe ssh /users/porting/software/$PYTHON/ xeona42.austin:software/$PYTHON
+
+#rsync -avzhe ssh --exclude='eclipse' --exclude='python' --exclude='java*' --exclude='chrom*' kingston.london.cd-adapco.com:examples/ $HOME/examples
+#rsync -avzhe ssh  phaethon.london.cd-adapco.com:/users/porting/dep/compilers/INTEL/14.0.1.106/ $HOME/software/compilers/INTEL/14.0.1.106
+#rsync -avzhe ssh  kingston.london.cd-adapco.com:personal/docs/ $HOME/personal/docs
