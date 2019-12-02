@@ -1,0 +1,14 @@
+#!/bin/bash
+
+SOFTWARE=$HOME/software
+OPENSSL=${SOFTWARE}/openssl/1.1.1d
+
+export LDFLAGS="-L${OPENSSL}/lib"
+export CPPFLAGS="-I${OPENSSL}/include"
+export LD_LIBRARY_PATH="${OPENSSL}/lib:${LD_LIBRARY_PATH}"
+
+./configure --prefix=${SOFTWARE}/python/2.7.17 --enable-optimizations --enable-shared --with-openssl=${OPENSSL}
+
+make -j16
+
+

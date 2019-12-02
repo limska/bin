@@ -34,17 +34,17 @@ if [ -d "$BINUTILS" -a -z "`echo $PATH | grep $BINUTILS`" ] ; then
   echo "Adding binutils $BINUTILS to PATH"
 fi
 
-GCC_BIN=
+CLANG_BIN=
 if [ -d "${DEV_HOME}/star" ] ; then
-    GCC_BIN=$(${DEV_HOME}/star/bin/map_compiler)/bin
+    CLANG_BIN=$(${DEV_HOME}/star/bin/map_compiler -env clang7.0)/bin
 else
-    GCC_BIN=$(ls -1dtr ${DEV_HOME}/compilers/linux-x86_64-[0-9.]*/gnu7.1.0/bin | tail -n 1)
+    CLANG_BIN=$(ls -1dtr ${DEV_HOME}/compilers/linux-x86_64-[0-9.]*/clang7.0.1/bin | tail -n 1)
 fi
-echo "GCC_BIN=$GCC_BIN"
-if [ -d "$GCC_BIN" -a -z "`echo $PATH | grep $GCC_BIN`" ] ; then
-  export PATH=$GCC_BIN:$PATH
-  echo "Adding gcc $GCC_BIN to PATH"
+echo "CLANG_BIN=$CLANG_BIN"
+if [ -d "$CLANG_BIN" -a -z "`echo $PATH | grep $CLANG_BIN`" ] ; then
+  export PATH=$CLANG_BIN:$PATH
+  echo "Adding clang $CLANG_BIN to PATH"
 fi
 
-export CC=${GCC_BIN}/gcc
-export CXX=${GCC_BIN}/g++
+export CC=${CLANG_BIN}/clang
+export CXX=${CLANG_BIN}/clang++

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+SOFTWARE=$HOME/software
+
+./configure --prefix=${SOFTWARE}/vim \
+--enable-python3interp=yes \
+--enable-fail-if-missing \
+--enable-cscopea \
+--with-features=huge
+
+make -j16
+
+make install

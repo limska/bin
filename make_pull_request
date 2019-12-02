@@ -17,7 +17,8 @@ if [ $# -gt 0 ] ; then
   EXEC=$1
   shift
 fi
-UNAME=`whoami`
+#UNAME=`whoami`
+UNAME=sava
 # echo "MSG=$MSG"
 # echo "Num arg: $#" 
 

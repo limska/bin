@@ -1,0 +1,13 @@
+#!/bin/bash
+
+
+SRC=$HOME/src/openssl
+SOFTWARE=$HOME/software/openssl
+
+./Configure shared --prefix=${SOFTWARE}/1.1.1d --openssldir=${SOFTWARE}/1.1.1d linux-x86_64
+
+make -j10
+
+make -j10 test
+
+make install
