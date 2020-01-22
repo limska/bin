@@ -1,8 +1,0 @@
-#!/bin/sh
-
-
-rm -rf lib/linux\-x86_64\-2.11.3/gnu4.6/lib/libCoSimulation*
-rm -rf lib/linux\-x86_64\-2.11.3/gnu4.6/cosimulation
-rm -rf lib/java/platform/modules/ext/cosimulation.jar
-rm -rf lib/java/cosimulation*
-

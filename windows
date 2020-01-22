@@ -1,3 +1,0 @@
-#!/bin/sh
-
-rdesktop -g 1280x1024 termsrv.vm
