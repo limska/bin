@@ -1,3 +1,0 @@
-#!/bin/sh
-
-ydiff LargeDisp/starcd4/solve Ref_LargeDisp/starcd4/solve | grep -v CVS
