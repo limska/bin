@@ -1,6 +1,6 @@
 #!/bin/zsh
 SESSION=build
-SRC="/u/cd8rit/src/starccm/dev/star"
+SRC="$HOME/src/starccm/dev/star"
 
 cd $SRC; tmux -2 new-session -d -s $SESSION -n 'git'
 
