@@ -1,0 +1,20 @@
+#!/bin/zsh
+
+echo "Killing Abaqus process eliT_DriverLM"
+killall -9 eliT_DriverLM;
+echo
+
+echo "Killing Abaqus process SMACseCtlMain"
+killall -9 SMACseCtlMain;
+echo
+
+echo "Killing Abaqus process standard"
+killall -9 standard;
+echo
+
+echo "Killing Abaqus process explicit"
+killall -9 explicit;
+echo
+
+echo "Killing Abaqus process explicit_dp"
+killall -9 explicit_dp;
