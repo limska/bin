@@ -28,6 +28,7 @@ makelink dotfiles_local/.tmux.conf.local .tmux.conf
 makelink dotfiles_local/.vimrc
 makelink dotfiles_local/.zshenv
 makelink dotfiles_local/.zshrc
+makelink dotfiles_local/.Xresources
 
 
 
