@@ -12,7 +12,7 @@ if [ -z "`echo $PATH | grep ${CMAKE_DIR}`" ] ; then
 fi
 
 # put ninja on path
-NINJA=$(ls -1dtr ${DEV_HOME}/ninja/[0-9.]*/linux-x86_64/bin | tail -n 1)
+NINJA=$(ls -1dtr ${DEV_HOME}/ninja/1.6.0/linux-x86_64/bin | tail -n 1)
 echo "NINJA=$NINJA"
 if [ -d "$NINJA" -a -z "`echo $PATH | grep $NINJA`" ] ; then
   export PATH=$NINJA:$PATH
@@ -38,12 +38,31 @@ GCC_BIN=
 if [ -d "${DEV_HOME}/star" ] ; then
     GCC_BIN=$(${DEV_HOME}/star/bin/map_compiler)/bin
 else
-    GCC_BIN=$(ls -1dtr ${DEV_HOME}/compilers/linux-x86_64-[0-9.]*/gnu7.1.0/bin | tail -n 1)
+    GCC_BIN=$(ls -1dtr ${DEV_HOME}/compilers/linux-x86_64-[0-9.]*/gnu9.2.0/bin | tail -n 1)
 fi
 echo "GCC_BIN=$GCC_BIN"
 if [ -d "$GCC_BIN" -a -z "`echo $PATH | grep $GCC_BIN`" ] ; then
   export PATH=$GCC_BIN:$PATH
   echo "Adding gcc $GCC_BIN to PATH"
+fi
+
+CLANG_BIN=
+if [ -d "${DEV_HOME}/star" ] ; then
+    CLANG_BIN=$(${DEV_HOME}/star/bin/map_compiler -env clang)/bin
+else
+    CLANG_BIN=$(ls -1dtr ${DEV_HOME}/compilers/linux-x86_64-2.[0-9]*/clang10.0.0/bin | tail -n 1)
+fi
+echo "CLANG_BIN=$CLANG_BIN"
+if [ -d "$CLANG_BIN" -a -z "`echo $PATH | grep $CLANG_BIN`" ] ; then
+  export PATH=$CLANG_BIN:$PATH
+  echo "Adding clang $CLANG_BIN to PATH"
+fi
+
+GCC_LIB=`dirname ${GCC_BIN}`/lib64
+echo "GCC_LIB=$GCC_LIB"
+if [ -d "$GCC_LIB" -a -z "`echo ${LD_LIBRARY_PATH} | grep $GCC_LIB`" ] ; then
+  export LD_LIBRARY_PATH=$GCC_LIB:${LD_LIBRARY_PATH}
+  echo "Adding gcc/lib64 $GCC_LIB to LD_LIBRARY_PATH"
 fi
 
 export CC=${GCC_BIN}/gcc

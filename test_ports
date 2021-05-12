@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo "netstat -tulnp"
+netstat -tulnp
+
+echo
+echo "ss -nutlp"
+ss -nutlp
+
+echo
+echo "lsof -i"
+lsof -i
+
