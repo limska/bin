@@ -1,0 +1,35 @@
+#!/bin/bash
+
+DEV_HOME=$HOME/src/starccm/dev
+echo "DEV_HOME=${DEV_HOME}"
+
+# put cmake on path
+CMAKE_DIR=$(ls -1dtr ${DEV_HOME}/cmake/[0-9.]*/linux-x86_64/bin | tail -n 1)
+echo "CMAKE_DIR=$CMAKE_DIR"
+if [ -z "`echo $PATH | grep ${CMAKE_DIR}`" ] ; then
+  export PATH=$CMAKE_DIR:$PATH
+  echo "Adding cmake ${CMAKE_DIR} to PATH"
+fi
+
+# put ninja on path
+NINJA=$(ls -1dtr ${DEV_HOME}/ninja/1.6.0/linux-x86_64/bin | tail -n 1)
+echo "NINJA=$NINJA"
+if [ -d "$NINJA" -a -z "`echo $PATH | grep $NINJA`" ] ; then
+  export PATH=$NINJA:$PATH
+  echo "Adding ninja $NINJA to PATH"
+fi
+
+cd llvm-project
+
+mkdir build
+
+cd build
+
+export CC=$HOME/toolchains/bin/gcc
+echo "CC=$CC"
+export CXX=$HOME/toolchains/bin/g++
+echo "CXX=$CXX"
+
+cmake ../llvm -G "Unix Makefiles" -D CMAKE_C_COMPILER=${CC} -D CMAKE_CXX_COMPILER=${CXX} -DLLVM_ENABLE_PROJECTS=clang -DCMAKE_CXX_LINK_FLAGS="-Wl,-rpath,$HOME/toolchains/lib64 -L$HOME/toolchains/lib64"
+
+make -j$(nproc)
