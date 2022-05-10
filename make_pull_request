@@ -22,7 +22,7 @@ UNAME=sava
 # echo "MSG=$MSG"
 # echo "Num arg: $#" 
 
-BNAME="feature/$UNAME/$JIRA/$NAME"
+BNAME="$NAME"
 
 if [ "$EXEC" != "Yes" ] ; then
   git remote -v
@@ -35,9 +35,9 @@ if [ "$EXEC" == "Yes" ] ; then
   sleep 2
 fi
 
-echo git commit -am \"$JIRA - $MSG\"
+echo git commit -am \"$JIRA $MSG\"
 if [ "$EXEC" == "Yes" ] ; then
-  git commit -am "$JIRA - $MSG"
+  git commit -am "$JIRA $MSG"
   sleep 2
 fi
 

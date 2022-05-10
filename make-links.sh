@@ -30,7 +30,18 @@ makelink dotfiles_local/.zshenv
 makelink dotfiles_local/.zshrc
 makelink dotfiles_local/.Xresources
 
+# Install fzf 
+echo
+echo "Install fzf"
+if [ -d ~/.fzf ] ; then
+  echo "fzf already installed, skipping"
+else
+  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  ~/.fzf/install
+fi
 
-
+echo
+echo "Install oh-my-zsh"
+echo "sh -c \"\$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\""
 
 cd $CWD
