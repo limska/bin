@@ -1,0 +1,10 @@
+#!/bin/bash
+
+. $HOME/bin/env
+
+echo "AWS_DOMAIN_OWNER=${AWS_DOMAIN_OWNER}"
+echo "AWS_PROFILE=${AWS_PROFILE}"
+
+aws sso login
+
+poetry config --local http-basic.cloudnc-master aws $(aws codeartifact get-authorization-token --domain cloudnc --domain-owner ${AWS_DOMAIN_OWNER} --query authorizationToken --output text)

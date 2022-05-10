@@ -1,0 +1,8 @@
+#!/bin/bash
+
+. $HOME/bin/env
+
+export RELEASE_VERSION=`git rev-parse HEAD`
+export ENVIRONMENT=production
+export SENTRY_DSN=${SERVICE_SENTRY_DSN}
+
