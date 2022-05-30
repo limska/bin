@@ -17,4 +17,9 @@ cd ~/dotfiles_local
 git status
 echo
 
+echo "Checking ~/keys"
+cd ~/keys
+git status
+echo
+
 cd $CWD

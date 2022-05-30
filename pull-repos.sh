@@ -20,4 +20,10 @@ git pull -p
 git status
 echo
 
+echo "Checking ~/keys"
+cd ~/keys
+git pull -p
+git status
+echo
+
 cd $CWD

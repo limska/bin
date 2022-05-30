@@ -31,4 +31,11 @@ if [ ! -d ~/dotfiles_local ] ; then
     echo
 fi
 
+if [ ! -d ~/keys ] ; then
+    echo "Cloning ~/keys"
+    git clone git@gitlab.cloudnc.in:sava.slijepcevic/keys.git
+    chmod 700 keys
+    echo
+fi
+
 cd $CWD
