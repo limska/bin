@@ -34,8 +34,14 @@ if [ "$EXEC" == "Yes" ] ; then
   sleep 2
 fi
 
+echo git add .
+if [ "$EXEC" == "Yes" ] ; then
+    git add .
+  sleep 2
+fi
+
 FULL_MSG="fix($NAME): $JIRA - $MSG"
-echo git commit -am \""$FULL_MSG"\"
+echo git commit -m \""$FULL_MSG"\"
 if [ "$EXEC" == "Yes" ] ; then
     git commit -am "fix($NAME): $JIRA - $MSG"
   sleep 2
@@ -47,8 +53,11 @@ if [ "$EXEC" == "Yes" ] ; then
   git push -u origin $BNAME
 fi
 
-GITUSER=`echo $(git config --global user.email) | cut -d'@' -f1`
-echo glab mr create --target-branch main --description "\"${FULL_MSG}\"" --title "\"$MSG\"" --squash-before-merge --remove-source-branch -a "\"$GITUSER\""
+MASTER=`git remote show origin | grep 'HEAD branch:' | cut -d' ' -f5`
+echo "MASTER=$MASTER"
+
+
+echo glab mr create --target-branch $MASTER --description "\"${FULL_MSG}\"" --title "\"$MSG\"" --squash-before-merge --remove-source-branch -a "\"$GITUSER\""
 if [ "$EXEC" == "Yes" ] ; then
-  glab mr create --target-branch main --description "${FULL_MSG}" --title "$MSG" --squash-before-merge --remove-source-branch -a "$GITUSER"
+  glab mr create --target-branch $MASTER --description "${FULL_MSG}" --title "$MSG" --squash-before-merge --remove-source-branch -a "$GITUSER"
 fi
