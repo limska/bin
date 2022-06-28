@@ -1,0 +1,13 @@
+#!/bin/bash
+
+SVG_FILE=$1
+shift
+
+for size in "$@"
+do
+  image=${size}x${size}.png
+  echo "Making $image"
+  echo inkscape --export-filename=${image} --export-overwrite --export-area-page --export-width=${size} --export-height=${size} --export-type=png ${SVG_FILE}
+  inkscape --export-filename=${image} --export-overwrite --export-area-page --export-width=${size} --export-height=${size} --export-type=png ${SVG_FILE}
+  echo
+done

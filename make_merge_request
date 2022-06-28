@@ -1,10 +1,16 @@
 #!/bin/bash
 
-if [ $# -lt 3 ] ; then
-  echo "Usage: $0 <JIRA> <Branch Name> <Message> [Yes]" 	 
+TYPES="fix feat build chore ci docs test perf refactor style"
+TYPES_HELP=`echo $TYPES | sed 's/ /|/g'`
+
+
+if [ $# -lt 4 ] ; then
+  echo "Usage: $0 <${TYPES_HELP}> <JIRA> <Friendly Name> <Message> [Yes]" 	 
   exit 1 
 fi
 
+TYPE=$1
+shift
 JIRA=$1
 shift
 NAME=$1
@@ -17,11 +23,14 @@ if [ $# -gt 0 ] ; then
   EXEC=$1
   shift
 fi
-#UNAME=`whoami`
-# echo "MSG=$MSG"
-# echo "Num arg: $#" 
 
-BNAME="fix/$JIRA-$NAME"
+VALID_TYPE=`echo $TYPES | grep -w $TYPE`
+if [ -z "${VALID_TYPE}" ]; then
+    echo "Wrong type $TYPE. Must be one of: ${TYPES}"
+    exit
+fi
+
+BNAME="$TYPE/$JIRA-$NAME"
 
 if [ "$EXEC" != "Yes" ] ; then
   git remote -v
@@ -40,10 +49,10 @@ if [ "$EXEC" == "Yes" ] ; then
   sleep 2
 fi
 
-FULL_MSG="fix($NAME): $JIRA - $MSG"
+FULL_MSG="$TYPE($NAME): $JIRA - $MSG"
 echo git commit -m \""$FULL_MSG"\"
 if [ "$EXEC" == "Yes" ] ; then
-    git commit -am "fix($NAME): $JIRA - $MSG"
+    git commit -am "$TYPE($NAME): $JIRA - $MSG"
   sleep 2
 fi
 
@@ -54,8 +63,7 @@ if [ "$EXEC" == "Yes" ] ; then
 fi
 
 MASTER=`git remote show origin | grep 'HEAD branch:' | cut -d' ' -f5`
-echo "MASTER=$MASTER"
-
+GITUSER=`git config user.email | cut -d@ -f1`
 
 echo glab mr create --target-branch $MASTER --description "\"${FULL_MSG}\"" --title "\"$MSG\"" --squash-before-merge --remove-source-branch -a "\"$GITUSER\""
 if [ "$EXEC" == "Yes" ] ; then
