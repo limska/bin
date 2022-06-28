@@ -65,7 +65,7 @@ fi
 MASTER=`git remote show origin | grep 'HEAD branch:' | cut -d' ' -f5`
 GITUSER=`git config user.email | cut -d@ -f1`
 
-echo glab mr create --target-branch $MASTER --description "\"${FULL_MSG}\"" --title "\"$MSG\"" --squash-before-merge --remove-source-branch -a "\"$GITUSER\""
+echo glab mr create --target-branch $MASTER --description "\"${FULL_MSG} @cutting-params\"" --title "\"$MSG\"" --draft --squash-before-merge --remove-source-branch -a "\"$GITUSER\""
 if [ "$EXEC" == "Yes" ] ; then
-  glab mr create --target-branch $MASTER --description "${FULL_MSG}" --title "$MSG" --squash-before-merge --remove-source-branch -a "$GITUSER"
+  glab mr create --target-branch $MASTER --description "${FULL_MSG} @cutting-params" --title "$MSG" --draft --squash-before-merge --remove-source-branch -a "$GITUSER"
 fi
