@@ -5,7 +5,7 @@ TYPES_HELP=`echo $TYPES | sed 's/ /|/g'`
 
 
 if [ $# -lt 4 ] ; then
-  echo "Usage: $0 <${TYPES_HELP}> <JIRA> <Friendly Name> <Message> [Yes]" 	 
+  echo "Usage: $0 <${TYPES_HELP}> <JIRA> <Scope> <Message> [Yes]" 	 
   exit 1 
 fi
 
@@ -13,7 +13,7 @@ TYPE=$1
 shift
 JIRA=$1
 shift
-NAME=$1
+SCOPE=$1
 shift
 MSG=$1
 shift
@@ -30,7 +30,7 @@ if [ -z "${VALID_TYPE}" ]; then
     exit
 fi
 
-BNAME="$TYPE/$JIRA-$NAME"
+BNAME="$TYPE/$JIRA-$SCOPE"
 
 if [ "$EXEC" != "Yes" ] ; then
   git remote -v
@@ -49,10 +49,10 @@ if [ "$EXEC" == "Yes" ] ; then
   sleep 2
 fi
 
-FULL_MSG="$TYPE($NAME): $JIRA - $MSG"
+FULL_MSG="$TYPE($SCOPE): $JIRA - $MSG"
 echo git commit -m \""$FULL_MSG"\"
 if [ "$EXEC" == "Yes" ] ; then
-    git commit -am "$TYPE($NAME): $JIRA - $MSG"
+    git commit -am "$TYPE($SCOPE): $JIRA - $MSG"
   sleep 2
 fi
 
@@ -65,7 +65,7 @@ fi
 MASTER=`git remote show origin | grep 'HEAD branch:' | cut -d' ' -f5`
 GITUSER=`git config user.email | cut -d@ -f1`
 
-echo glab mr create --target-branch $MASTER --description "\"${FULL_MSG} @cutting-params\"" --title "\"$MSG\"" --draft --squash-before-merge --remove-source-branch -a "\"$GITUSER\""
+echo glab mr create --target-branch $MASTER --description "\"${FULL_MSG}\"" --title "\"$MSG\"" --draft --remove-source-branch -a "\"$GITUSER\""
 if [ "$EXEC" == "Yes" ] ; then
-  glab mr create --target-branch $MASTER --description "${FULL_MSG} @cutting-params" --title "$MSG" --draft --squash-before-merge --remove-source-branch -a "$GITUSER"
+  glab mr create --target-branch $MASTER --description "${FULL_MSG}" --title "$MSG" --draft --remove-source-branch -a "$GITUSER"
 fi

@@ -27,7 +27,7 @@ makelink dotfiles_local/.gitconfig
 makelink dotfiles_local/.tmux.conf.local .tmux.conf
 makelink dotfiles_local/.vimrc
 makelink dotfiles_local/.zshenv
-makelink dotfiles_local/.zshrc
+makelink dotfiles/.zshrc
 makelink dotfiles_local/.Xresources
 
 # Install fzf 
