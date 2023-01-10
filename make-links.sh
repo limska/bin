@@ -17,6 +17,7 @@ makelink () {
     fi
     if [ -f ~/$base ] ; then
         echo "Link ~/$base found skipping"
+        ls -la $base
     else
         ln -vs $target $base
     fi
