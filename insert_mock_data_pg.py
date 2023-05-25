@@ -76,6 +76,9 @@ def main():
         "{ 'name' : 'job name 2' }", "1")
     cur.execute(job_history_query, job_history_data)
 
+    attachment_query = "INSERT INTO attachment (id, filename, uuid, url, job_id) VALUES (%s, %s, %s, %s, %s)"
+    attachment_data = ("1", "file.csv", "ee954e82-dab6-4aa9-be4b-6b4742b06e88", "http://sdfvsd/sdfvsd/ffgg", "2")
+    cur.execute(attachment_query, attachment_data)
 
     # Commit the changes to the database
     conn.commit()
