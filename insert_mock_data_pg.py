@@ -1,7 +1,12 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.9
+import random
+import string
 
 import psycopg2
 import os
+import uuid
+
+from psycopg2 import *
 
 
 def print_tables(cur):
@@ -15,6 +20,86 @@ def print_tables(cur):
         rows = cur.fetchall()
         for row in rows:
             print(row)
+
+
+def execute(cur, query, data):
+    try:
+        cur.execute(query, data)
+    except Exception as e:
+        print(f"Failed to execute\n  {query}\n  {e}")
+
+
+def create_project(cur):
+    query = "INSERT INTO project (name, gitlab_project_id, gitlab_project_token, gitlab_webhook_secret, " \
+            "jira_key, compass_component_id, compass_deployment_event_source_id) VALUES (%s, %s, %s, %s, " \
+            "%s, %s, %s) RETURNING id;"
+    compass_id = f'ari:cloud:compass:{uuid.uuid4()}:component/3a2c7123-c245-4e57-84df-081b5d316bb1/{uuid.uuid4()}'
+    compass_source_id = f'{uuid.uuid4()}'
+    project = ''.join(random.sample(string.ascii_lowercase, 8))
+    data = (project, "63", "12345678", "12345678", "AUTO", compass_id, compass_source_id)
+    execute(cur, query, data)
+    project_id = cur.fetchone()[0]
+    print(f'project_id = {project_id}')
+    return project_id
+
+
+def create_job(cur, project_id):
+    job_query = "INSERT INTO job (branch, commit_sha, status, created_at, started_at, type, payload, project_id) " \
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;"
+    job_data = (
+        "branch1", "ABCDEF1234", "EXECUTING", "2023-01-01 12:00:00", "2023-01-01 12:00:00",
+        "CUTTING_PARAMS_TEST_RUN",
+        "", f"{project_id}")
+    execute(cur, job_query, job_data)
+    job_id = cur.fetchone()[0]
+    print(f'job_id = {job_id}')
+    return job_id
+
+
+def move_job_to_history(cur, job_id, executor_id, project_id):
+    select_query = "SELECT * FROM job WHERE id = %s;"
+    select_data = (job_id,)
+    execute(cur, select_query, select_data)
+    record = cur.fetchone()
+    print(f'Job record: {record}')
+
+    delete_query = "DELETE FROM job WHERE id IN (%s);"
+    delete_data = [job_id]
+    execute(cur, delete_query, delete_data)
+
+    job_history_query = "INSERT INTO job_history (id, branch, commit_sha, executed_on, " \
+                        "created_at, started_at, finished_at, " \
+                        "result, reason, type, payload, project_id) " \
+                        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;"
+    job_history_data = (
+        f"{job_id}", "branch3", "ABCDEF1234", f'{executor_id}',
+        "2023-01-01 10:00:00", "2023-01-01 11:00:00", "2023-01-01 12:00:00",
+        "SUCCESS", "", "ANY",
+        "{ 'name' : 'job name 2' }", f'{project_id}')
+    execute(cur, job_history_query, job_history_data)
+    job_history_id = cur.fetchone()[0]
+    print(f'job_history_id = {job_history_id}')
+    return job_history_id
+
+
+def create_executor(cur, job_id):
+    name = ''.join(random.sample(string.ascii_lowercase, 8))
+    executor_query = "INSERT INTO executor (host, port, name, currently_executing_job, type) " \
+                     "VALUES (%s, %s, %s, %s, %s) RETURNING id;"
+    executor_data = ("100.69.1.123", random.randint(1001, 9000), name, job_id, "FUSION_360")
+    execute(cur, executor_query, executor_data)
+    executor_id = cur.fetchone()[0]
+    print(f'executor_id = {executor_id}')
+    return executor_id
+
+
+def create_attachment(cur, job_id):
+    attachment_query = "INSERT INTO attachment (filename, document_id, job_id) VALUES (%s, %s, %s) RETURNING id;"
+    attachment_data = ("file.csv", str(uuid.uuid4()), job_id)
+    execute(cur, attachment_query, attachment_data)
+    attachment_id = cur.fetchone()[0]
+    print(f'attachment_id = {attachment_id}')
+    return attachment_id
 
 
 def main():
@@ -39,46 +124,18 @@ def main():
     )
 
     # Create a cursor object to execute SQL queries
-    cur = conn.cursor()
+    cur: cursor = conn.cursor()
 
-    print_tables(cur)
+    project_id = create_project(cur)
 
-    project_query = "INSERT INTO project (id, name, gitlab_project_id, gitlab_project_token, gitlab_webhook_secret, " \
-                    "jira_key, compass_component_id, compass_deployment_event_source_id) VALUES (%s, %s, %s, %s, %s, " \
-                    "%s, %s, %s)"
-    project_data = ("1", "blue-fox", "63", "12345678", "12345678", "AUTO",
-                    "ari:cloud:compass:2edb6087-00f4-4968-bca5-fd6ade7628d4:component/3a2c7123-c245-4e57-84df"
-                    "-081b5d316bb1/e340c3ef-f81f-4a49-9afd-d9e18c644f00",
-                    "")
-    cur.execute(project_query, project_data)
+    job_id1 = create_job(cur, project_id)
+    job_id2 = create_job(cur, project_id)
 
-    job_query = "INSERT INTO job (id, branch, commit_sha, status, created_at, started_at, type, payload, project_id) " \
-                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    job_data1 = (
-        "2", "branch2", "ABCDEF1234", "WAITING", "2023-01-01 12:00:00", "2023-01-01 12:00:00",
-        "CUTTING_PARAMS_TEST_RUN",
-        "", "1")
-    cur.execute(job_query, job_data1)
+    executor_id = create_executor(cur, job_id2)
 
-    executor_query = "INSERT INTO executor (id, host, port, name, currently_executing_job, type) " \
-                     "VALUES (%s, %s, %s, %s, %s, %s)"
-    executor_data = ("2", "100.69.1.123", "8000", "machine2", "2", "FUSION_360")
-    cur.execute(executor_query, executor_data)
+    job_history_id = move_job_to_history(cur, job_id1, executor_id, project_id)
 
-    job_history_query = "INSERT INTO job_history (id, branch, commit_sha, executed_on, " \
-                        "created_at, started_at, finished_at, " \
-                        "result, reason, type, payload, project_id) " \
-                        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    job_history_data = (
-        "3", "branch3", "ABCDEF1234", "2",
-        "2023-01-01 10:00:00", "2023-01-01 11:00:00", "2023-01-01 12:00:00",
-        "SUCCESS", "", "CUTTING_PARAMS_TEST_RUN",
-        "{ 'name' : 'job name 2' }", "1")
-    cur.execute(job_history_query, job_history_data)
-
-    attachment_query = "INSERT INTO attachment (id, filename, uuid, url, job_id) VALUES (%s, %s, %s, %s, %s)"
-    attachment_data = ("1", "file.csv", "ee954e82-dab6-4aa9-be4b-6b4742b06e88", "http://sdfvsd/sdfvsd/ffgg", "2")
-    cur.execute(attachment_query, attachment_data)
+    create_attachment(cur, job_history_id)
 
     # Commit the changes to the database
     conn.commit()
