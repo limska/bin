@@ -1,4 +1,5 @@
 #!/usr/bin/env python3.9
+
 import random
 import string
 
@@ -35,7 +36,8 @@ def create_project(cur):
             "%s, %s, %s) RETURNING id;"
     compass_id = f'ari:cloud:compass:{uuid.uuid4()}:component/3a2c7123-c245-4e57-84df-081b5d316bb1/{uuid.uuid4()}'
     compass_source_id = f'{uuid.uuid4()}'
-    project = ''.join(random.sample(string.ascii_lowercase, 8))
+    # project = ''.join(random.sample(string.ascii_lowercase, 8))
+    project = "blue-fox"
     data = (project, "63", "12345678", "12345678", "AUTO", compass_id, compass_source_id)
     execute(cur, query, data)
     project_id = cur.fetchone()[0]
@@ -94,8 +96,8 @@ def create_executor(cur, job_id):
 
 
 def create_attachment(cur, job_id):
-    attachment_query = "INSERT INTO attachment (filename, document_id, job_id) VALUES (%s, %s, %s) RETURNING id;"
-    attachment_data = ("file.csv", str(uuid.uuid4()), job_id)
+    attachment_query = "INSERT INTO attachment (job_id, name, document_service_id, type) VALUES (%s, %s, %s, %s) RETURNING id;"
+    attachment_data = (job_id, "file.csv", str(uuid.uuid4()), "CUTTING_PARAMETERS_CSV")
     execute(cur, attachment_query, attachment_data)
     attachment_id = cur.fetchone()[0]
     print(f'attachment_id = {attachment_id}')
