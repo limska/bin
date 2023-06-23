@@ -5,7 +5,7 @@ TYPES_HELP=`echo $TYPES | sed 's/ /|/g'`
 
 
 if [ $# -lt 4 ] ; then
-  echo "Usage: $0 <${TYPES_HELP}> <JIRA> <Scope> <Message> [Yes]" 	 
+  echo "Usage: $0 <${TYPES_HELP}> <JIRA> <Scope> <Branch> <Message> [Yes]" 	 
   exit 1 
 fi
 
@@ -14,6 +14,8 @@ shift
 JIRA=$1
 shift
 SCOPE=$1
+shift
+BRANCH=$1
 shift
 MSG=$1
 shift
@@ -30,7 +32,7 @@ if [ -z "${VALID_TYPE}" ]; then
     exit
 fi
 
-BNAME="$TYPE/$JIRA-$SCOPE"
+BNAME="$TYPE/$JIRA-$BRANCH"
 
 if [ "$EXEC" != "Yes" ] ; then
   git remote -v

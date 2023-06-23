@@ -50,7 +50,7 @@ def create_job(cur, project_id):
                 "VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;"
     job_data = (
         "branch1", "ABCDEF1234", "EXECUTING", "2023-01-01 12:00:00", "2023-01-01 12:00:00",
-        "CUTTING_PARAMS_TEST_RUN",
+        "FUSION_360_CAM",
         "", f"{project_id}")
     execute(cur, job_query, job_data)
     job_id = cur.fetchone()[0]
