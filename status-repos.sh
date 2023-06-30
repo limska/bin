@@ -3,8 +3,14 @@
 
 CWD=`pwd`
 
-folders=("bin" "dotfiles" "dotfiles_local" "keys")
+folders=("bin" "dotfiles" "dotfiles_local" "keys" "brrr")
 root=$HOME
+if [ $# -gt 1 ]; then
+  folders=($*)
+  root=$(pwd)
+fi
+echo "folders=$folders"
+echo "root=$root"
 
 for f in "${folders[@]}"; do
     folder="$root/$f"

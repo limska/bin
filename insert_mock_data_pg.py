@@ -130,14 +130,14 @@ def main():
 
     project_id = create_project(cur)
 
-    job_id1 = create_job(cur, project_id)
-    job_id2 = create_job(cur, project_id)
+#    job_id1 = create_job(cur, project_id)
+#    job_id2 = create_job(cur, project_id)
 
-    executor_id = create_executor(cur, job_id2)
+#    executor_id = create_executor(cur, job_id2)
 
-    job_history_id = move_job_to_history(cur, job_id1, executor_id, project_id)
+#    job_history_id = move_job_to_history(cur, job_id1, executor_id, project_id)
 
-    create_attachment(cur, job_history_id)
+#    create_attachment(cur, job_history_id)
 
     # Commit the changes to the database
     conn.commit()

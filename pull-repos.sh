@@ -2,28 +2,21 @@
 
 CWD=`pwd`
 
-echo "Checking ~/bin"
-cd ~/bin
-git pull -p
-git status
-echo
+root=$HOME
+if [ $# -gt 1 ]; then
+  folders=($*)
+  root=$(pwd)
+fi
+echo "folders=$folders"
+echo "root=$root"
 
-echo "Checking ~/dotfiles"
-cd ~/dotfiles
-git pull -p
-git status
-echo
-
-echo "Checking ~/dotfiles_local"
-cd ~/dotfiles_local
-git pull -p
-git status
-echo
-
-echo "Checking ~/keys"
-cd ~/keys
-git pull -p
-git status
-echo
+for f in "${folders[@]}"; do
+    folder="$root/$f"
+    echo "Checking $folder"
+    cd $folder
+    git pull -p
+    git status
+    echo
+done
 
 cd $CWD
