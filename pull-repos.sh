@@ -2,6 +2,7 @@
 
 CWD=`pwd`
 
+folders=("bin" "dotfiles" "dotfiles_local" "keys" "brrr")
 root=$HOME
 if [ $# -gt 1 ]; then
   folders=($*)
