@@ -33,7 +33,8 @@ fi
 
 if [ ! -d ~/keys ] ; then
     echo "Cloning ~/keys"
-    git clone git@gitlab.cloudnc.in:sava.slijepcevic/keys.git
+    #git clone git@gitlab.cloudnc.in:sava.slijepcevic/keys.git
+    git clone git@gitlab.com:limska/keys.git
     chmod 700 keys
     echo
 fi
