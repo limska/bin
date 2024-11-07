@@ -1,0 +1,20 @@
+#!/bin/bash
+
+FILES="$*"
+EPOLISH_OPTS="\
+    -noindent_comment_marker \
+    -alter_comments \
+    -kwcase=lowercase \
+    -dcolon_column=36 \
+    -margin=0 \
+    -width=108 \
+    -align_right_continuation \
+    -subroutine_parens \
+    -I build/modules"
+
+for file in $FILES; do
+  OUT=${file}_epo
+  echo nagfor \=epolish ${EPOLISH_OPTS} -o $OUT $file
+  nagfor \=epolish ${EPOLISH_OPTS} -o $OUT $file
+  mv -v $OUT $file
+done
