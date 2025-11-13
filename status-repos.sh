@@ -17,7 +17,6 @@ for f in "${folders[@]}"; do
   echo "$folder: branch $(tput setaf 6)$branch_name$(tput sgr0)"
   cd $folder
   git status --short
-  echo
 done
 
 cd $CWD

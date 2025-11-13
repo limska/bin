@@ -20,13 +20,9 @@ echo "SIF_NAME: ${SIF_NAME}"
 LINK_BASE=$(basename ${LINK_FILE} .sif)
 echo "LINK_BASE: ${LINK_BASE}"
 
-echo "ssh lapras 'cd /mnt/Pool1/container && ls -l ${LINK_FILE} 2> /dev/null'"
-LINK_EXISTS=$(ssh lapras "cd /mnt/Pool1/container && ls -l ${LINK_FILE} 2> /dev/null")
-if [ -n "$LINK_EXISTS" ] ; then
-    echo "Removing old link ${LINK_EXISTS}"
-    echo "ssh lapras 'cd /mnt/Pool1/container && rm -vf ${LINK_FILE}'"
-    ssh lapras 'cd /mnt/Pool1/container && rm -vf ${LINK_FILE}'
-fi
+echo "Removing old link ${LINK_EXISTS}"
+echo "ssh lapras 'cd /mnt/Pool1/container && rm -vf ${LINK_FILE}'"
+ssh lapras "cd /mnt/Pool1/container && rm -vf ${LINK_FILE}"
 
 echo "Sending file to lapras"
 echo "rsync -avP ${SIF_FILE} lapras:/mnt/Pool1/container"
