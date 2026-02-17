@@ -2,7 +2,7 @@
 
 CWD=`pwd`
 
-repos=("replib" "ianus-simod" "aerationtanklib" "blow" "diegeolib" "hotrunner" "geolib" "simodlib" "kube" "simodclustercomponents" "container" "slv" "featflower" "scripts")
+repos=("replib" "ianus-simod" "aerationtanklib" "blow" "diegeolib" "hotrunner" "runner" "geolib" "simodlib" "kube" "simodclustercomponents" "container" "slv" "featflower" "pumpgeolib")
 
 root=$HOME/repo
 if [ $# -gt 1 ]; then
