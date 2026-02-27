@@ -13,4 +13,5 @@ echo "export PATH=$(pwd)/bin:\$PATH"
 echo
 
 export PATH=$(pwd)/bin:$PATH
-./runner/scripts/run --help
+echo "$(pwd)/runner/scripts/run -help"
+$(pwd)/runner/scripts/run --help
