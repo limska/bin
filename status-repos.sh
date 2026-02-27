@@ -13,10 +13,13 @@ echo "root=$root"
 
 for f in "${folders[@]}"; do
   folder="$root/$f"
-  branch_name=$(git -C $folder rev-parse --abbrev-ref HEAD 2>/dev/null)
-  echo "$folder: branch $(tput setaf 6)$branch_name$(tput sgr0)"
-  cd $folder
-  git status --short
+  git_folder=$folder/.git
+  if [ -d "$git_folder" ] ; then
+    branch_name=$(git -C $folder rev-parse --abbrev-ref HEAD 2>/dev/null)
+    echo "$folder: branch $(tput setaf 6)$branch_name$(tput sgr0)"
+    cd $folder
+    git status --short
+  fi
 done
 
 cd $CWD
