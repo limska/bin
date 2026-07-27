@@ -5,12 +5,12 @@
   gather_facts: true
 
   vars:
-    local_bin_path: "{{ ansible_env.HOME }}/.local/bin:{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.HOME }}/.bin"
+    local_bin_path: "{{ ansible_facts.env.HOME }}/.local/bin:{{ ansible_facts.env.HOME }}/.cargo/bin:{{ ansible_facts.env.HOME }}/.bin"
 
   tasks:
     - name: Ensure SSH Ed25519 key pair exists
-      ansible.builtin.crypto.openssh_keypair:
-        path: "{{ ansible_env.HOME }}/.ssh/id_ed25519"
+      community.crypto.openssh_keypair:
+        path: "{{ ansible_facts.env.HOME }}/.ssh/id_ed25519"
         type: ed25519
         state: present
         comment: "ansible-generated-key"
@@ -18,11 +18,11 @@
     - name: Install uv Python package manager
       ansible.builtin.shell: |
         if ! command -v uv &> /dev/null; then
-          curl -LsSf https://astral.sh/uv/install.sh | sh
+          curl -LsSf https://astral.sh | sh
           echo "changed"
         fi
       environment:
-        PATH: "{{ ansible_env.PATH }}:{{ local_bin_path }}"
+        PATH: "{{ ansible_facts.env.PATH }}:{{ local_bin_path }}"
       register: uv_install
       changed_when: "'changed' in uv_install.stdout"
 
@@ -33,7 +33,7 @@
           echo "changed"
         fi
       environment:
-        PATH: "{{ ansible_env.PATH }}:{{ local_bin_path }}"
+        PATH: "{{ ansible_facts.env.PATH }}:{{ local_bin_path }}"
       register: rust_install
       changed_when: "'changed' in rust_install.stdout"
 
@@ -43,7 +43,7 @@
         locked: true
         state: present
       environment:
-        PATH: "{{ ansible_env.PATH }}:{{ local_bin_path }}"
+        PATH: "{{ ansible_facts.env.PATH }}:{{ local_bin_path }}"
 
     - name: Install Atuin shell history
       ansible.builtin.shell: |
@@ -52,7 +52,7 @@
           echo "changed"
         fi
       environment:
-        PATH: "{{ ansible_env.PATH }}:{{ local_bin_path }}"
+        PATH: "{{ ansible_facts.env.PATH }}:{{ local_bin_path }}"
       register: atuin_install
       changed_when: "'changed' in atuin_install.stdout"
 
@@ -62,7 +62,7 @@
       vars:
         dotfiles_repo: "ssh://git@codeberg.org/limska/dotfiles.git"
       environment:
-        PATH: "{{ ansible_env.PATH }}:{{ local_bin_path }}"
+        PATH: "{{ ansible_facts.env.PATH }}:{{ local_bin_path }}"
       register: chezmoi_output
       changed_when: true
 
