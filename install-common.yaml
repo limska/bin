@@ -1,0 +1,72 @@
+---
+- name: Setup User Environment, Keys, and Applications without sudo
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  vars:
+    local_bin_path: "{{ ansible_env.HOME }}/.local/bin:{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.HOME }}/.bin"
+
+  tasks:
+    - name: Ensure SSH Ed25519 key pair exists
+      ansible.builtin.crypto.openssh_keypair:
+        path: "{{ ansible_env.HOME }}/.ssh/id_ed25519"
+        type: ed25519
+        state: present
+        comment: "ansible-generated-key"
+
+    - name: Install uv Python package manager
+      ansible.builtin.shell: |
+        if ! command -v uv &> /dev/null; then
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "changed"
+        fi
+      environment:
+        PATH: "{{ ansible_env.PATH }}:{{ local_bin_path }}"
+      register: uv_install
+      changed_when: "'changed' in uv_install.stdout"
+
+    - name: Install Rust and Cargo
+      ansible.builtin.shell: |
+        if ! command -v cargo &> /dev/null; then
+          curl --proto '=https' --tlsv1.2 -sSf https://rustup.rs | sh -s -- -y
+          echo "changed"
+        fi
+      environment:
+        PATH: "{{ ansible_env.PATH }}:{{ local_bin_path }}"
+      register: rust_install
+      changed_when: "'changed' in rust_install.stdout"
+
+    - name: Install Starship via Cargo
+      community.general.cargo:
+        name: starship
+        locked: true
+        state: present
+      environment:
+        PATH: "{{ ansible_env.PATH }}:{{ local_bin_path }}"
+
+    - name: Install Atuin shell history
+      ansible.builtin.shell: |
+        if ! command -v atuin &> /dev/null; then
+          curl --proto '=https' --tlsv1.2 -LsSf https://atuin.sh | sh
+          echo "changed"
+        fi
+      environment:
+        PATH: "{{ ansible_env.PATH }}:{{ local_bin_path }}"
+      register: atuin_install
+      changed_when: "'changed' in atuin_install.stdout"
+
+    - name: Download and execute chezmoi initialization script
+      ansible.builtin.shell: |
+        sh -c "$(curl -fsLS https://chezmoi.io)" -- init --apply {{ dotfiles_repo }}
+      vars:
+        dotfiles_repo: "ssh://git@codeberg.org/limska/dotfiles.git"
+      environment:
+        PATH: "{{ ansible_env.PATH }}:{{ local_bin_path }}"
+      register: chezmoi_output
+      changed_when: true
+
+    - name: Show chezmoi installation output
+      ansible.builtin.debug:
+        var: chezmoi_output.stdout_lines
+

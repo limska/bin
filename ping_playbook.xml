@@ -1,0 +1,8 @@
+- hosts: localhost
+
+  tasks:
+    - name: "ping all"
+      ping:
+
+    - name: "shell cmd"
+      shell: "date; whoami; df -h;"

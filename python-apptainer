@@ -1,0 +1,4 @@
+#! /usr/bin/bash
+ 
+echo "$@" >> /home/sava/test.log
+exec apptainer exec /home/sava/repo/container/preprocessing.amd64_cpu.local.sif /ianus/venv/bin/python "$@"
